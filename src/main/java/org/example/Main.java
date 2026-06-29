@@ -1,8 +1,11 @@
 package org.example;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Main
@@ -86,13 +89,18 @@ public class Main
     // סעיף ג': מפה של שם מחלקה לרשימת שמות קורסים ייחודיים
     // ==========================================
     public static Map<String, List<String>> courseTitlesByDepartmentFromYear(List<Student> students, int fromYear) {
-        return students.stream()
+        Map<String, Set<String>> tempMap = students.stream()
                 .flatMap(student -> student.getCourses().stream())
                 .filter(course -> course.getYear() >= fromYear)
-                .distinct()
                 .collect(Collectors.groupingBy(
                         course -> course.getDepartment().getName(),
-                        Collectors.mapping(Course::getTitle, Collectors.toList())
+                        Collectors.mapping(Course::getTitle, Collectors.toSet())
                 ));
+        Map<String, List<String>> resultMap = new HashMap<>();
+        for (Map.Entry<String, Set<String>> entry : tempMap.entrySet()) {
+            resultMap.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+        }
+
+        return resultMap;
     }
 }
